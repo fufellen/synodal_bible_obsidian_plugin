@@ -103,13 +103,15 @@ Bible marker CSS classes
 `Bible marker CSS classes` — CSS-классы из frontmatter, по которым файл считается библейской главой независимо от папки. Значение по умолчанию:
 
 ```text
-bible-verses
+synodal-bible-chapter
 ```
+
+`synodal-bible-chapter` — метка для глав из проекта `synodal_bible_obsidian`.
 
 Это значит, что если папка Библии переедет, есть два нормальных варианта:
 
 1. Изменить путь в настройках `Bible root folders`.
-2. Оставить/добавить в главах `cssclasses: bible-verses`; тогда путь не важен.
+2. Оставить/добавить в главах `cssclasses: synodal-bible-chapter`; тогда путь не важен.
 
 ### Обычные главы Библии
 
@@ -176,10 +178,10 @@ bible-verses
 
 ```yaml
 cssclasses:
-  - bible-verses
+  - synodal-bible-chapter
 ```
 
-Этот marker class больше не нужен для старого CSS, но теперь может быть полезен как универсальный признак "это глава Библии". Если папка переедет, плагин всё равно распознает такие файлы.
+Эта метка больше не нужна для старого CSS, но теперь полезна как универсальный признак "это глава синодальной Библии". Если папка переедет, плагин всё равно распознает такие файлы.
 
 Если папка Библии будет переименована или перенесена, менять код больше не нужно. Достаточно открыть настройки плагина и изменить:
 
@@ -187,7 +189,7 @@ cssclasses:
 Bible root folders
 ```
 
-Если хочется полностью отвязаться от пути, оставить в главах `cssclasses: bible-verses` и оставить `bible-verses` в настройке `Bible marker CSS classes`.
+Если хочется полностью отвязаться от пути, оставить в главах `cssclasses: synodal-bible-chapter` и оставить `synodal-bible-chapter` в настройке `Bible marker CSS classes`.
 
 ## Как работает плагин
 
@@ -299,7 +301,7 @@ Tests/Bible embeds.md
 - между соседними стихами нет большого пустого промежутка;
 - `118:78` не наезжает на текст стиха;
 - номер стиха стоит на одной строке с первой строкой текста.
-- `![[Bible marker detection#1 1]]` оформляется как библейская цитата, хотя файл лежит вне папки Библии и распознается только по `cssclasses: bible-verses`.
+- `![[Bible marker detection#1 1]]` оформляется как библейская цитата, хотя файл лежит вне папки Библии и распознается только по `cssclasses: synodal-bible-chapter`.
 
 6. Открыть обычную главу Библии, например:
 
@@ -397,7 +399,7 @@ C:\Users\mrfuf\Мой диск (mr.fufelen@gmail.com)\Obsidian\.obsidian\plugins
 
 - включен ли plugin `Bible Embed Style`;
 - был ли сделан `Ctrl+R` после установки;
-- лежит ли файл внутри настроенной папки Библии или есть ли у него `cssclasses: bible-verses`;
+- лежит ли файл внутри настроенной папки Библии или есть ли у него `cssclasses: synodal-bible-chapter`;
 - открыт ли файл в режиме чтения, а не редактирования.
 
 ### Embed не оформился
@@ -405,7 +407,7 @@ C:\Users\mrfuf\Мой диск (mr.fufelen@gmail.com)\Obsidian\.obsidian\plugins
 Проверить:
 
 - Obsidian может открыть ссылку руками;
-- ссылка ведет в файл, который плагин распознает как Библию: по папке или по `cssclasses: bible-verses`;
+- ссылка ведет в файл, который плагин распознает как Библию: по папке или по `cssclasses: synodal-bible-chapter`;
 - заголовок стиха существует в целевом файле;
 - номер стиха оформлен как `###### 3:10`.
 
@@ -417,10 +419,10 @@ C:\Users\mrfuf\Мой диск (mr.fufelen@gmail.com)\Obsidian\.obsidian\plugins
 
 ```yaml
 cssclasses:
-  - bible-verses
+  - synodal-bible-chapter
 ```
 
-то можно вообще не привязываться к папке: оставить `bible-verses` в настройке `Bible marker CSS classes`.
+то можно вообще не привязываться к папке: оставить `synodal-bible-chapter` в настройке `Bible marker CSS classes`.
 
 ### После изменения CSS ничего не поменялось
 

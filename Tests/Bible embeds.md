@@ -29,6 +29,6 @@ This text intentionally breaks the consecutive quote group.
 
 ## Marker-based Bible reference
 
-This target is outside `Церковь/Библия/Библия/`, but has `cssclasses: bible-verses`.
+This target is outside `Церковь/Библия/Библия/`, but has `cssclasses: synodal-bible-chapter`.
 
 ![[Bible marker detection#1 1]]

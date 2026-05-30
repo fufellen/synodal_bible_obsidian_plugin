@@ -10,9 +10,10 @@ const TARGET_ATTRIBUTES = [
   "aria-label",
   "title",
 ];
+const PRIMARY_MARKER_CLASS = "synodal-bible-chapter";
 const DEFAULT_SETTINGS = {
   bibleRoots: ["Церковь/Библия/Библия/"],
-  markerClasses: ["bible-verses"],
+  markerClasses: [PRIMARY_MARKER_CLASS],
 };
 
 module.exports = class BibleEmbedStylePlugin extends Plugin {
@@ -118,7 +119,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     return {
       bibleRoots: bibleRoots.length ? bibleRoots : DEFAULT_SETTINGS.bibleRoots,
       markerClasses: markerClasses.length
-        ? markerClasses
+        ? [...new Set(markerClasses)]
         : DEFAULT_SETTINGS.markerClasses,
     };
   }
