@@ -1,0 +1,9 @@
+{
+  "id": "bible-embed-style",
+  "name": "Bible Embed Style",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Styles embedded Bible verse links and hides repeated chapter labels for consecutive quotes.",
+  "author": "mrfuf + Codex",
+  "isDesktopOnly": false
+}

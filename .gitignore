@@ -1,0 +1,10 @@
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.trash/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.zip
+Церковь/Библия/Библия/**/snippets.css
+*.tmp
+*.log
