@@ -46,7 +46,9 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       delete el.dataset.bibleBook;
       delete el.dataset.bibleChapter;
       delete el.dataset.bibleVerse;
+      delete el.dataset.bibleReference;
       delete el.dataset.biblePath;
+      this.clearVerseBlocks(el);
     });
   }
 
@@ -139,6 +141,8 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       book,
       chapter: parsedChapter,
       verse: parsedVerse,
+      reference:
+        parsedChapter && parsedVerse ? `${parsedChapter}:${parsedVerse}` : "",
     };
   }
 
@@ -199,6 +203,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     el.dataset.bibleBook = info.book;
     el.dataset.bibleChapter = info.chapter;
     el.dataset.bibleVerse = info.verse;
+    el.dataset.bibleReference = info.reference;
     el.dataset.biblePath = info.file.path;
 
     this.decorateVerseBlocks(el);
@@ -212,6 +217,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     delete el.dataset.bibleBook;
     delete el.dataset.bibleChapter;
     delete el.dataset.bibleVerse;
+    delete el.dataset.bibleReference;
     delete el.dataset.biblePath;
     this.clearVerseBlocks(el);
   }
@@ -227,10 +233,19 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       const numberBlock = heading.parentElement;
       if (!numberBlock) continue;
 
+      const textBlock = numberBlock.nextElementSibling;
+      const row = document.createElement("div");
+      row.className = "bible-verse-row";
+
+      numberBlock.parentNode.insertBefore(row, numberBlock);
+      row.appendChild(numberBlock);
+      if (textBlock) {
+        row.appendChild(textBlock);
+      }
+
       numberBlock.classList.add("bible-verse-number-block");
       heading.classList.add("bible-verse-number");
 
-      const textBlock = numberBlock.nextElementSibling;
       if (textBlock) {
         textBlock.classList.add("bible-verse-text-block");
       }
@@ -238,6 +253,13 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
   }
 
   clearVerseBlocks(el) {
+    el.querySelectorAll(".bible-verse-row").forEach((row) => {
+      while (row.firstChild) {
+        row.parentNode.insertBefore(row.firstChild, row);
+      }
+      row.remove();
+    });
+
     el.querySelectorAll(".bible-verse-number-block").forEach((block) => {
       block.classList.remove("bible-verse-number-block");
     });

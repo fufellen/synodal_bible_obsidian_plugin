@@ -1,6 +1,5 @@
 .bible-embed {
-  --bible-embed-number-width: 1.75em;
-  --bible-embed-number-gap: 0.25em;
+  --bible-embed-number-gap: 0.75ch;
 }
 
 .bible-embed .markdown-embed-title {
@@ -31,46 +30,12 @@
   overflow: visible;
 }
 
-.bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) {
-  float: left;
-  clear: left;
-  box-sizing: border-box;
-  width: var(--bible-embed-number-width);
-  margin: 1.05em var(--bible-embed-number-gap) 0 0.15em;
-  padding: 0;
-}
-
-.bible-embed .bible-verse-number-block {
-  float: left;
-  clear: left;
-  box-sizing: border-box;
-  width: var(--bible-embed-number-width);
-  margin: 1.05em var(--bible-embed-number-gap) 0 0.15em;
-  padding: 0;
-}
-
-.bible-embed.bible-embed-repeated-title
-  .markdown-embed-content
-  .el-h6:has(> h6[data-heading*=":"]) {
-  margin-top: 0.45em;
-}
-
-.bible-embed.bible-embed-repeated-title .bible-verse-number-block {
-  margin-top: 0.45em;
-}
-
-.bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) > h6 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-family: var(--font-family-preview);
-  font-size: 0.72em !important;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 1.45;
-  color: var(--text-faint) !important;
-  text-align: left;
-  white-space: nowrap;
+.bible-embed .bible-verse-row {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: var(--bible-embed-number-gap);
+  align-items: baseline;
+  margin-block: var(--p-spacing);
 }
 
 .bible-embed .bible-verse-number {
@@ -87,20 +52,15 @@
   white-space: nowrap;
 }
 
-.bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) + .el-p {
-  margin-left: 2.15em;
-  overflow: visible;
+.bible-embed .bible-verse-number-block,
+.bible-embed .bible-verse-text-block {
+  min-width: 0;
 }
 
 .bible-embed .bible-verse-text-block {
-  margin-left: 2.15em;
   overflow: visible;
 }
 
-.bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) + .el-p > p {
-  margin-top: 0;
-}
-
 .bible-embed .bible-verse-text-block > p {
-  margin-top: 0;
+  margin-block: 0;
 }
