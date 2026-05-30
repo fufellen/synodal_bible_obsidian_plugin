@@ -17,7 +17,12 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     this.refreshTimer = null;
 
     this.registerMarkdownPostProcessor((el, ctx) => {
-      this.processRoot(el, ctx.sourcePath || "");
+      const sourcePath = ctx.sourcePath || "";
+
+      if (!this.isBibleFile(sourcePath)) {
+        this.processRoot(el, sourcePath);
+      }
+
       this.scheduleProcessViews();
     });
 
@@ -50,6 +55,11 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       delete el.dataset.biblePath;
       this.clearVerseBlocks(el);
     });
+
+    document.querySelectorAll(".bible-page").forEach((el) => {
+      el.classList.remove("bible-page");
+    });
+    this.clearVerseBlocks(document, "bible-page-verse-row");
   }
 
   scheduleProcessViews() {
@@ -74,6 +84,16 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
   }
 
   processRoot(root, sourcePath) {
+    if (
+      this.isBibleFile(sourcePath) &&
+      this.isMarkdownViewRoot(root) &&
+      !this.isInsideEmbed(root)
+    ) {
+      this.applyBiblePage(root);
+    } else {
+      this.clearBiblePage(root);
+    }
+
     const bibleEmbeds = [];
 
     for (const el of this.getTopLevelEmbeds(root)) {
@@ -89,6 +109,52 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     }
 
     this.markRepeatedTitles(bibleEmbeds);
+  }
+
+  applyBiblePage(root) {
+    this.getBiblePageRoots(root).forEach((el) => {
+      el.classList.add("bible-page");
+    });
+
+    this.decorateVerseBlocks(root, {
+      excludeEmbeds: true,
+      rowClass: "bible-page-verse-row",
+    });
+  }
+
+  clearBiblePage(root) {
+    this.getBiblePageRoots(root).forEach((el) => {
+      el.classList.remove("bible-page");
+    });
+
+    this.clearVerseBlocks(root, "bible-page-verse-row");
+  }
+
+  getBiblePageRoots(root) {
+    const roots = [];
+
+    if (root.classList) {
+      roots.push(root);
+    }
+
+    root
+      .querySelectorAll?.(".markdown-reading-view, .markdown-preview-view")
+      .forEach((el) => roots.push(el));
+
+    return roots;
+  }
+
+  isInsideEmbed(root) {
+    return root.closest?.(EMBED_SELECTOR);
+  }
+
+  isMarkdownViewRoot(root) {
+    return Boolean(
+      root.classList?.contains("workspace-leaf-content") ||
+        root.classList?.contains("markdown-reading-view") ||
+        root.classList?.contains("markdown-preview-view") ||
+        root.querySelector?.(".markdown-reading-view, .markdown-preview-view")
+    );
   }
 
   getTopLevelEmbeds(root) {
@@ -206,7 +272,9 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     el.dataset.bibleReference = info.reference;
     el.dataset.biblePath = info.file.path;
 
-    this.decorateVerseBlocks(el);
+    this.decorateVerseBlocks(el, {
+      selector: '.markdown-embed-content h6[data-heading*=":"]',
+    });
   }
 
   clearBibleEmbed(el) {
@@ -222,11 +290,14 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     this.clearVerseBlocks(el);
   }
 
-  decorateVerseBlocks(el) {
-    this.clearVerseBlocks(el);
+  decorateVerseBlocks(el, options = {}) {
+    const selector = options.selector || 'h6[data-heading*=":"]';
+    const rowClass = options.rowClass || "";
 
-    const headings = Array.from(
-      el.querySelectorAll('.markdown-embed-content h6[data-heading*=":"]')
+    this.clearVerseBlocks(el, rowClass);
+
+    const headings = Array.from(el.querySelectorAll(selector)).filter(
+      (heading) => !options.excludeEmbeds || !heading.closest(EMBED_SELECTOR)
     );
 
     headings.forEach((heading, index) => {
@@ -235,8 +306,13 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
 
       const textBlock = numberBlock.nextElementSibling;
       const row = document.createElement("div");
-      row.className =
-        index === 0 ? "bible-verse-row bible-verse-first-row" : "bible-verse-row";
+      row.classList.add("bible-verse-row");
+      if (index === 0) {
+        row.classList.add("bible-verse-first-row");
+      }
+      if (rowClass) {
+        row.classList.add(rowClass);
+      }
 
       numberBlock.parentNode.insertBefore(row, numberBlock);
       row.appendChild(numberBlock);
@@ -253,21 +329,51 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     });
   }
 
-  clearVerseBlocks(el) {
-    el.querySelectorAll(".bible-verse-row").forEach((row) => {
+  clearVerseBlocks(el, rowClass = "") {
+    const selector = rowClass
+      ? `.bible-verse-row.${rowClass}`
+      : ".bible-verse-row";
+    const rows = Array.from(el.querySelectorAll(selector));
+    const numberBlocks = new Set();
+    const verseNumbers = new Set();
+    const textBlocks = new Set();
+
+    rows.forEach((row) => {
+      row
+        .querySelectorAll(".bible-verse-number-block")
+        .forEach((block) => numberBlocks.add(block));
+      row
+        .querySelectorAll(".bible-verse-number")
+        .forEach((heading) => verseNumbers.add(heading));
+      row
+        .querySelectorAll(".bible-verse-text-block")
+        .forEach((block) => textBlocks.add(block));
+    });
+
+    rows.forEach((row) => {
       while (row.firstChild) {
         row.parentNode.insertBefore(row.firstChild, row);
       }
       row.remove();
     });
 
-    el.querySelectorAll(".bible-verse-number-block").forEach((block) => {
+    const removeNumberBlocks = rowClass
+      ? Array.from(numberBlocks)
+      : Array.from(el.querySelectorAll(".bible-verse-number-block"));
+    const removeVerseNumbers = rowClass
+      ? Array.from(verseNumbers)
+      : Array.from(el.querySelectorAll(".bible-verse-number"));
+    const removeTextBlocks = rowClass
+      ? Array.from(textBlocks)
+      : Array.from(el.querySelectorAll(".bible-verse-text-block"));
+
+    removeNumberBlocks.forEach((block) => {
       block.classList.remove("bible-verse-number-block");
     });
-    el.querySelectorAll(".bible-verse-number").forEach((heading) => {
+    removeVerseNumbers.forEach((heading) => {
       heading.classList.remove("bible-verse-number");
     });
-    el.querySelectorAll(".bible-verse-text-block").forEach((block) => {
+    removeTextBlocks.forEach((block) => {
       block.classList.remove("bible-verse-text-block");
     });
   }
