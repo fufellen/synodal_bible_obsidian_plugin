@@ -1,6 +1,5 @@
-const { Plugin } = require("obsidian");
+const { Plugin, PluginSettingTab, Setting } = require("obsidian");
 
-const BIBLE_ROOT = "Церковь/Библия/Библия/";
 const EMBED_SELECTOR = ".internal-embed, .markdown-embed";
 const TARGET_ATTRIBUTES = [
   "src",
@@ -11,10 +10,17 @@ const TARGET_ATTRIBUTES = [
   "aria-label",
   "title",
 ];
+const DEFAULT_SETTINGS = {
+  bibleRoots: ["Церковь/Библия/Библия/"],
+  markerClasses: ["bible-verses"],
+};
 
 module.exports = class BibleEmbedStylePlugin extends Plugin {
   async onload() {
+    await this.loadSettings();
+
     this.refreshTimer = null;
+    this.addSettingTab(new BibleEmbedStyleSettingTab(this.app, this));
 
     this.registerMarkdownPostProcessor((el, ctx) => {
       const sourcePath = ctx.sourcePath || "";
@@ -34,6 +40,9 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     );
     this.registerEvent(
       this.app.workspace.on("file-open", () => this.scheduleProcessViews())
+    );
+    this.registerEvent(
+      this.app.metadataCache.on("changed", () => this.scheduleProcessViews())
     );
 
     this.scheduleProcessViews();
@@ -81,6 +90,57 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       const sourcePath = view.file ? view.file.path : "";
       this.processRoot(view.containerEl, sourcePath);
     }
+  }
+
+  async loadSettings() {
+    this.settings = this.normalizeSettings(await this.loadData());
+  }
+
+  async saveSettings() {
+    this.settings = this.normalizeSettings(this.settings);
+    await this.saveData(this.settings);
+    this.scheduleProcessViews();
+  }
+
+  normalizeSettings(data) {
+    const settings = Object.assign({}, DEFAULT_SETTINGS, data || {});
+    const bibleRoots = this.normalizeList(settings.bibleRoots)
+      .map((root) => this.normalizeRoot(root))
+      .filter(Boolean);
+    const markerClasses = this.normalizeList(settings.markerClasses)
+      .map((className) => className.trim())
+      .filter(Boolean);
+
+    return {
+      bibleRoots: bibleRoots.length ? bibleRoots : DEFAULT_SETTINGS.bibleRoots,
+      markerClasses: markerClasses.length
+        ? markerClasses
+        : DEFAULT_SETTINGS.markerClasses,
+    };
+  }
+
+  normalizeList(value) {
+    if (Array.isArray(value)) {
+      return value.flatMap((item) => this.normalizeList(item));
+    }
+
+    if (typeof value === "string") {
+      return value
+        .split(/[\n,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  }
+
+  normalizeRoot(root) {
+    const normalized = String(root || "")
+      .replace(/\\/g, "/")
+      .replace(/^\/+|\/+$/g, "")
+      .trim();
+
+    return normalized ? `${normalized}/` : "";
   }
 
   processRoot(root, sourcePath) {
@@ -254,10 +314,53 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
 
   isBibleFile(path) {
     const normalized = path.replace(/\\/g, "/");
-    return (
-      normalized === BIBLE_ROOT.slice(0, -1) ||
-      normalized.startsWith(BIBLE_ROOT)
+    return this.isBiblePath(normalized) || this.hasBibleMarker(path);
+  }
+
+  isBiblePath(path) {
+    const normalized = String(path || "").replace(/\\/g, "/");
+
+    return this.settings.bibleRoots.some((root) => {
+      return normalized === root.slice(0, -1) || normalized.startsWith(root);
+    });
+  }
+
+  hasBibleMarker(pathOrFile) {
+    const file =
+      typeof pathOrFile === "string"
+        ? this.app.vault.getAbstractFileByPath(pathOrFile)
+        : pathOrFile;
+
+    if (!file || file.extension !== "md") return false;
+
+    const cache = this.app.metadataCache.getFileCache(file);
+    const frontmatter = cache ? cache.frontmatter : null;
+    if (!frontmatter) return false;
+
+    const cssClasses = [
+      ...this.extractCssClasses(frontmatter.cssclasses),
+      ...this.extractCssClasses(frontmatter.cssclass),
+      ...this.extractCssClasses(frontmatter["css-classes"]),
+    ];
+
+    return cssClasses.some((className) =>
+      this.settings.markerClasses.includes(className)
     );
+  }
+
+  extractCssClasses(value) {
+    if (Array.isArray(value)) {
+      return value.flatMap((item) => this.extractCssClasses(item));
+    }
+
+    if (typeof value === "string") {
+      return value
+        .split(/[\s,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    return [];
   }
 
   applyBibleEmbedInfo(info) {
@@ -422,3 +525,62 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     return el.closest(".el-embed") || el;
   }
 };
+
+class BibleEmbedStyleSettingTab extends PluginSettingTab {
+  constructor(app, plugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+
+  display() {
+    const { containerEl } = this;
+    containerEl.empty();
+
+    containerEl.createEl("h2", { text: "Bible Embed Style" });
+
+    new Setting(containerEl)
+      .setName("Bible root folders")
+      .setDesc(
+        "One folder per line. Files under these folders are treated as Bible chapters."
+      )
+      .addTextArea((text) => {
+        text
+          .setValue(this.plugin.settings.bibleRoots.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.bibleRoots = this.plugin.normalizeList(value);
+            await this.plugin.saveSettings();
+          });
+
+        text.inputEl.rows = 4;
+        text.inputEl.cols = 42;
+      });
+
+    new Setting(containerEl)
+      .setName("Bible marker CSS classes")
+      .setDesc(
+        "Comma- or line-separated frontmatter cssclasses. Files with these classes are treated as Bible chapters even if their folder changes."
+      )
+      .addTextArea((text) => {
+        text
+          .setValue(this.plugin.settings.markerClasses.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.markerClasses = this.plugin.normalizeList(value);
+            await this.plugin.saveSettings();
+          });
+
+        text.inputEl.rows = 3;
+        text.inputEl.cols = 42;
+      });
+
+    new Setting(containerEl)
+      .setName("Reset defaults")
+      .setDesc("Restore the default Bible folder and marker class.")
+      .addButton((button) => {
+        button.setButtonText("Reset").onClick(async () => {
+          this.plugin.settings = this.plugin.normalizeSettings(DEFAULT_SETTINGS);
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      });
+  }
+}

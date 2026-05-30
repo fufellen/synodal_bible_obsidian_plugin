@@ -26,3 +26,9 @@ This text intentionally breaks the consecutive quote group.
 ![[Ин Глава 5#5 41]]
 
 ![[Мал Глава 3#3 10]]
+
+## Marker-based Bible reference
+
+This target is outside `Церковь/Библия/Библия/`, but has `cssclasses: bible-verses`.
+
+![[Bible marker detection#1 1]]
