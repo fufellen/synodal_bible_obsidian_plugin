@@ -50,7 +50,7 @@ Tests/
 Боевой vault:
 
 ```text
-C:\Users\mrfuf\Мой диск (mr.fufelen@gmail.com)\Obsidian
+<production-vault>
 ```
 
 Туда уже перенесен плагин:
@@ -351,7 +351,7 @@ C:\workspace\obsidian-bible-embed-style-dev\.obsidian\plugins\bible-embed-style
 в боевой vault:
 
 ```text
-C:\Users\mrfuf\Мой диск (mr.fufelen@gmail.com)\Obsidian\.obsidian\plugins\bible-embed-style
+<production-vault>\.obsidian\plugins\bible-embed-style
 ```
 
 3. Проверить, что `.obsidian/community-plugins.json` содержит:
