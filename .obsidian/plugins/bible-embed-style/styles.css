@@ -38,6 +38,10 @@
   margin-block: var(--p-spacing);
 }
 
+.bible-embed.bible-embed-repeated-title .bible-verse-row {
+  margin-block-start: 0;
+}
+
 .bible-embed .bible-verse-number {
   margin: 0;
   padding: 0;
