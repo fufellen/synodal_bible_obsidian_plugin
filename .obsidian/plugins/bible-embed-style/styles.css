@@ -1,5 +1,6 @@
 .bible-embed {
   --bible-embed-number-gap: 0.75ch;
+  --bible-embed-title-to-verse-gap: 0.55em;
 }
 
 .bible-embed .markdown-embed-title {
@@ -36,6 +37,10 @@
   column-gap: var(--bible-embed-number-gap);
   align-items: baseline;
   margin-block: var(--p-spacing);
+}
+
+.bible-embed:not(.bible-embed-repeated-title) .bible-verse-first-row {
+  margin-block-start: var(--bible-embed-title-to-verse-gap);
 }
 
 .bible-embed.bible-embed-repeated-title .bible-verse-row {

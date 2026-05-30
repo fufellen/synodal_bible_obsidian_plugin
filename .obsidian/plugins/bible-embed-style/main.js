@@ -229,13 +229,14 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       el.querySelectorAll('.markdown-embed-content h6[data-heading*=":"]')
     );
 
-    for (const heading of headings) {
+    headings.forEach((heading, index) => {
       const numberBlock = heading.parentElement;
-      if (!numberBlock) continue;
+      if (!numberBlock) return;
 
       const textBlock = numberBlock.nextElementSibling;
       const row = document.createElement("div");
-      row.className = "bible-verse-row";
+      row.className =
+        index === 0 ? "bible-verse-row bible-verse-first-row" : "bible-verse-row";
 
       numberBlock.parentNode.insertBefore(row, numberBlock);
       row.appendChild(numberBlock);
@@ -249,7 +250,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       if (textBlock) {
         textBlock.classList.add("bible-verse-text-block");
       }
-    }
+    });
   }
 
   clearVerseBlocks(el) {
