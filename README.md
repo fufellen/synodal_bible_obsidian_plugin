@@ -239,9 +239,11 @@ CSS скрывает повторный заголовок главы у так�
 ```text
 bible-page
 bible-embed
+bible-embed-has-next
 bible-embed-repeated-title
 bible-verse-row
 bible-verse-first-row
+bible-verse-last-row
 bible-page-verse-row
 bible-verse-number-block
 bible-verse-number
@@ -258,6 +260,8 @@ bible-verse-text-block
 `--bible-verse-number-gap` управляет расстоянием между номером стиха и текстом.
 
 `--bible-verse-title-to-verse-gap` управляет расстоянием между заголовком главы в embed-цитате и первой строкой стиха.
+
+У последней строки стиха в отдельном библейском блоке нижний отступ убирается, чтобы после цитаты не появлялась пустая строка. Если embed-цитата является частью подряд идущей группы стихов, предыдущий embed получает `bible-embed-has-next`, и его нижний отступ сохраняется как разделитель между стихами.
 
 ## Что плагин не делает
 

@@ -32,6 +32,10 @@
   overflow: visible;
 }
 
+.bible-embed .markdown-preview-sizer {
+  min-height: 0 !important;
+}
+
 .bible-embed .bible-verse-row,
 .bible-page .bible-verse-row {
   display: grid;
@@ -48,6 +52,11 @@
 
 .bible-embed.bible-embed-repeated-title .bible-verse-row {
   margin-block-start: 0;
+}
+
+.bible-embed:not(.bible-embed-has-next) .bible-verse-last-row,
+.bible-page .bible-verse-last-row {
+  margin-block-end: 0;
 }
 
 .bible-embed .bible-verse-number,

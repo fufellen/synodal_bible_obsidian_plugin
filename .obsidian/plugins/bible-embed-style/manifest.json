@@ -1,7 +1,7 @@
 {
   "id": "bible-embed-style",
   "name": "Bible Embed Style",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "1.5.0",
   "description": "Styles Bible pages and embedded verse links using configurable folders and frontmatter markers.",
   "author": "mrfuf + Codex",

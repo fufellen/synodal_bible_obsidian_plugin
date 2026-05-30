@@ -55,7 +55,11 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     }
 
     document.querySelectorAll(".bible-embed").forEach((el) => {
-      el.classList.remove("bible-embed", "bible-embed-repeated-title");
+      el.classList.remove(
+        "bible-embed",
+        "bible-embed-repeated-title",
+        "bible-embed-has-next"
+      );
       delete el.dataset.bibleTitle;
       delete el.dataset.bibleBook;
       delete el.dataset.bibleChapter;
@@ -367,7 +371,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     const { el } = info;
 
     el.classList.add("bible-embed");
-    el.classList.remove("bible-embed-repeated-title");
+    el.classList.remove("bible-embed-repeated-title", "bible-embed-has-next");
     el.dataset.bibleTitle = info.title;
     el.dataset.bibleBook = info.book;
     el.dataset.bibleChapter = info.chapter;
@@ -383,7 +387,11 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
   clearBibleEmbed(el) {
     if (!el.classList.contains("bible-embed")) return;
 
-    el.classList.remove("bible-embed", "bible-embed-repeated-title");
+    el.classList.remove(
+      "bible-embed",
+      "bible-embed-repeated-title",
+      "bible-embed-has-next"
+    );
     delete el.dataset.bibleTitle;
     delete el.dataset.bibleBook;
     delete el.dataset.bibleChapter;
@@ -412,6 +420,9 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       row.classList.add("bible-verse-row");
       if (index === 0) {
         row.classList.add("bible-verse-first-row");
+      }
+      if (index === headings.length - 1) {
+        row.classList.add("bible-verse-last-row");
       }
       if (rowClass) {
         row.classList.add(rowClass);
@@ -495,6 +506,7 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
       const adjacent = this.areAdjacentEmbeds(previous.el, current.el);
 
       if (sameChapter && adjacent) {
+        previous.el.classList.add("bible-embed-has-next");
         current.el.classList.add("bible-embed-repeated-title");
       }
     }
