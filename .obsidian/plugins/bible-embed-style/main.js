@@ -200,6 +200,8 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     el.dataset.bibleChapter = info.chapter;
     el.dataset.bibleVerse = info.verse;
     el.dataset.biblePath = info.file.path;
+
+    this.decorateVerseBlocks(el);
   }
 
   clearBibleEmbed(el) {
@@ -211,6 +213,40 @@ module.exports = class BibleEmbedStylePlugin extends Plugin {
     delete el.dataset.bibleChapter;
     delete el.dataset.bibleVerse;
     delete el.dataset.biblePath;
+    this.clearVerseBlocks(el);
+  }
+
+  decorateVerseBlocks(el) {
+    this.clearVerseBlocks(el);
+
+    const headings = Array.from(
+      el.querySelectorAll('.markdown-embed-content h6[data-heading*=":"]')
+    );
+
+    for (const heading of headings) {
+      const numberBlock = heading.parentElement;
+      if (!numberBlock) continue;
+
+      numberBlock.classList.add("bible-verse-number-block");
+      heading.classList.add("bible-verse-number");
+
+      const textBlock = numberBlock.nextElementSibling;
+      if (textBlock) {
+        textBlock.classList.add("bible-verse-text-block");
+      }
+    }
+  }
+
+  clearVerseBlocks(el) {
+    el.querySelectorAll(".bible-verse-number-block").forEach((block) => {
+      block.classList.remove("bible-verse-number-block");
+    });
+    el.querySelectorAll(".bible-verse-number").forEach((heading) => {
+      heading.classList.remove("bible-verse-number");
+    });
+    el.querySelectorAll(".bible-verse-text-block").forEach((block) => {
+      block.classList.remove("bible-verse-text-block");
+    });
   }
 
   markRepeatedTitles(infos) {

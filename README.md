@@ -33,6 +33,8 @@ C:\workspace\obsidian-bible-embed-style-dev
 
 Тесты/
   Библейские embed-цитаты.md
+Tests/
+  Bible embeds.md
 ```
 
 Папка `Церковь/Библия/Библия` скопирована из текущего рабочего vault, чтобы структура путей совпадала с боевой.
@@ -75,6 +77,12 @@ C:\workspace\obsidian-bible-embed-style-dev
 
 ```text
 Тесты/Библейские embed-цитаты.md
+```
+
+Для проверки через быстрый поиск Obsidian также есть англоязычный дубль:
+
+```text
+Tests/Bible embeds.md
 ```
 
 Главный кейс:

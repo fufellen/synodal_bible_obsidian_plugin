@@ -40,13 +40,40 @@
   padding: 0;
 }
 
+.bible-embed .bible-verse-number-block {
+  float: left;
+  clear: left;
+  box-sizing: border-box;
+  width: var(--bible-embed-number-width);
+  margin: 1.05em var(--bible-embed-number-gap) 0 0.15em;
+  padding: 0;
+}
+
 .bible-embed.bible-embed-repeated-title
   .markdown-embed-content
   .el-h6:has(> h6[data-heading*=":"]) {
   margin-top: 0.45em;
 }
 
+.bible-embed.bible-embed-repeated-title .bible-verse-number-block {
+  margin-top: 0.45em;
+}
+
 .bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) > h6 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-family-preview);
+  font-size: 0.72em !important;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text-faint) !important;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bible-embed .bible-verse-number {
   margin: 0;
   padding: 0;
   border: 0;
@@ -65,6 +92,15 @@
   overflow: visible;
 }
 
+.bible-embed .bible-verse-text-block {
+  margin-left: 2.15em;
+  overflow: visible;
+}
+
 .bible-embed .markdown-embed-content .el-h6:has(> h6[data-heading*=":"]) + .el-p > p {
+  margin-top: 0;
+}
+
+.bible-embed .bible-verse-text-block > p {
   margin-top: 0;
 }
